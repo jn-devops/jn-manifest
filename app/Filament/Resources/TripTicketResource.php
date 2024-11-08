@@ -73,6 +73,26 @@ class TripTicketResource extends Resource
                                 ->columns(10)
                                 ->maxLength(255),
                             Forms\Components\Repeater::make('manifests')
+                                ->label('Passengers')
+                                ->schema([
+                                    Forms\Components\TextInput::make('name')->required(),
+                                    Forms\Components\Select::make('passenger_type')
+                                        ->label('Type')
+                                        ->options([
+                                            'driver' => 'Driver',
+                                            'guest' => 'Guest',
+                                            'employee' => 'Employee',
+                                        ])
+                                        ->required()
+                                        ->default('guest')
+                                        ->native(false),
+                                ])
+                                ->columns(2)
+                                ->maxItems(5)
+                                ->minItems(1)
+                                ->columnSpanFull()
+                                ->hiddenOn('edit'),
+                            Forms\Components\Repeater::make('manifests')
                                 ->relationship()
                                 ->label('Passengers')
                                 ->schema([
@@ -90,7 +110,9 @@ class TripTicketResource extends Resource
                                 ])
                                 ->columns(2)
                                 ->maxItems(5)
-                                ->columnSpanFull(),
+                                ->minItems(1)
+                                ->columnSpanFull()
+                                ->hiddenOn('create'),
                         ])->columns(3)->columnSpanFull(),
                     ])->columns(3)->columnSpan(3),
                     Forms\Components\Group::make()

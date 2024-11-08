@@ -19,14 +19,13 @@ class CreateTripTicket
      * @param CarType $carType The car type associated with the trip ticket
      * @param Project $project The project associated with the trip ticket
      * @param Account $account The account associated with the trip ticket
-     * @param Collection $manifests The manifests associated with the trip ticket
      * @param Carbon $fromDataTime The from date and time of the trip ticket
      * @param Carbon $toDataTime The to date and time of the trip ticket
      * @param string $remarks The remarks associated with the trip ticket
      * @param string $location The location associated with the trip ticket
      * @return TripTicket The newly created trip ticket
      */
-    public function handle(User $user, Employee $employee, CarType $carType, Project $project, Account $account, Collection $manifests, Carbon $fromDataTime, Carbon $toDataTime, string $remarks, string $location): TripTicket
+    public function handle(User $user, Employee $employee, CarType $carType, Project $project, Account $account, Carbon $fromDataTime, Carbon $toDataTime, string $remarks, string $location): TripTicket
     {
         $tripTicket = new TripTicket;
         $tripTicket->user()->associate($user);

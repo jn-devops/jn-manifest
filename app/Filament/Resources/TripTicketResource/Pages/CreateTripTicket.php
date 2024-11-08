@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Models\Manifest;
 use App\Models\Project;
 use App\Models\TripTicket;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Carbon;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
@@ -19,6 +20,7 @@ class CreateTripTicket extends CreateRecord
 {
     protected static string $resource = TripTicketResource::class;
 
+
     protected function handleRecordCreation(array $data): TripTicket
     {
         // Run the CreateTripTicket service to create the TripTicket instance
@@ -28,7 +30,6 @@ class CreateTripTicket extends CreateRecord
             CarType::find($data['car_type_id']),   // Find the related car type
             Project::find($data['project_id']),    // Find the related project
             Account::find($data['account_id']),    // Find the related account
-            collect($data['manifests']),            // Pass the manifests as a collection
             new Carbon($data['fromDateTime']),     // Parse fromDateTime to Carbon
             new Carbon($data['toDateTime']),       // Parse toDateTime to Carbon
             $data['remarks'],
@@ -36,13 +37,18 @@ class CreateTripTicket extends CreateRecord
         );
 
         // After creating the TripTicket, add manifests if necessary
-        foreach ($data['manifest'] as $manifestData) {
+        foreach ($data['manifests'] as $manifestData) {
             $manifest = new Manifest();
             $manifest->name = $manifestData['name'];
             $manifest->passenger_type = $manifestData['passenger_type'];
             $tripTicket->manifests()->save($manifest);  // Save each manifest to the TripTicket
         }
         $tripTicket->save();
+        Notification::make()
+            ->title('Saved successfully')
+            ->sendToDatabase(auth()->user(), isEventDispatched: true);
         return $tripTicket;
     }
+
+
 }
