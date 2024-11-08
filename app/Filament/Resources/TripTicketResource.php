@@ -7,6 +7,7 @@ use App\Filament\Resources\TripTicketResource\RelationManagers;
 use App\Filament\Resources\UpdateLogsResource\RelationManagers\UpdateLogRelationManager;
 use App\Models\TripTicket;
 use App\Models\UpdateLog;
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Placeholder;
@@ -121,15 +122,36 @@ class TripTicketResource extends Resource
                         ->schema([
                             Forms\Components\Section::make()
                                 ->schema([
-
                                     Placeholder::make('status')
                                         ->content(fn ($record) => $record?->status)
                                         ->hiddenOn('create'),
                                     Placeholder::make('created_at')
                                         ->content(fn ($record) => $record?->created_at?->diffForHumans() ?? new HtmlString('&mdash;')),
-
                                     Placeholder::make('updated_at')
                                         ->content(fn ($record) => $record?->created_at?->diffForHumans() ?? new HtmlString('&mdash;'))
+                                ]),
+                            Forms\Components\Section::make()
+                                ->schema([
+                                    Placeholder::make('status')
+                                        ->label('Status History')
+                                        ->content(function ($record) {
+                                            $timeline = '<div style="position: relative; max-width: 600px; margin: 0 auto; padding-left: 25px; border-left: 2px solid #ddd;">';
+
+                                            foreach ($record->statuses->sortByDesc('created_at') as $status) {
+                                                $date = \Carbon\Carbon::parse($status->created_at);
+                                                $timeline .= '
+                <div style="margin: 15px 0; padding: 15px 20px; background-color: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); position: relative;">
+                    <h4 style="margin: 0; color: #333; font-weight: 600;">' . htmlspecialchars($status->name) . '</h4>
+                    <p style="color: #666; margin: 5px 0;">' . htmlspecialchars($status->reason) . '</p>
+                    <small style="color: #999; display: block; font-size: 0.9em; margin-top: 5px;">' . $date->format('F j, Y') . '<br>' . $date->format('g:i A') . '</small>
+                    <small style="color: #999; font-size: 0.9em;">' . htmlspecialchars(User::find($status->user_id)->name??'' ) . '</small>
+                </div>';
+                                            }
+
+                                            $timeline .= '</div>';
+                                            return new HtmlString($timeline);
+                                        })
+                                        ->hiddenOn('create'),
                                 ]),
                         ])
                         ->columnSpan(1),
@@ -199,7 +221,7 @@ class TripTicketResource extends Resource
     public static function getRelations(): array
     {
         return [
-           UpdateLogRelationManager::class,
+            UpdateLogRelationManager::class,
         ];
     }
 
