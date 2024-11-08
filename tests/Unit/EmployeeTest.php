@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Notification;
 uses(RefreshDatabase::class, WithFaker::class);
 
 test('employee has attributes', function () {
-    $employee = Employee::factory()->create();
+    $employee = Employee::factory()->create(['mobile' => '09171234567']);
     expect($employee->id)->toBeInt();
     expect($employee->name)->toBeString();
     expect($employee->email)->toBeString();

@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{Account, Employee, Project, TripTicket, User};
+use App\Models\{Account, Employee, Manifest, Project, TripTicket, User};
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 
@@ -9,6 +9,8 @@ uses(RefreshDatabase::class, WithFaker::class);
 test('trip ticket has attributes', function () {
     $trip_ticket = TripTicket::factory()->forUser()->create();
     expect($trip_ticket->id)->toBeInt();
+    expect($trip_ticket->code)->toBeString();
+    expect(strlen($trip_ticket->code))->toBe(8);
     expect($trip_ticket->status)->toBeString();
     expect($trip_ticket->remarks)->toBeString();
 });
@@ -48,4 +50,20 @@ test('trip ticket has account relation', function () {
     $trip_ticket = TripTicket::factory()->forUser()->make();
     $trip_ticket->account()->associate($account);
     expect($trip_ticket->account->is($account))->toBeTrue();
+});
+
+test('trip ticket has many manifests', function () {
+    $trip_ticket = TripTicket::factory()->forUser()->create();
+    expect($trip_ticket->manifests)->toHaveCount(0);
+    $name = $this->faker->name();
+    $passenger_type = $this->faker->sentence();
+    $manifest = Manifest::factory()->create();
+    $manifest->trip_ticket()->associate($trip_ticket);
+    $trip_ticket->manifests()->save(Manifest::factory()->create());
+    $manifest = Manifest::factory()->create();
+    $manifest->trip_ticket()->associate($trip_ticket);
+    $trip_ticket->manifests()->save(Manifest::factory()->create());
+    $trip_ticket->manifests()->create(compact('name', 'passenger_type'));
+    $trip_ticket->refresh();
+    expect($trip_ticket->manifests)->toHaveCount(3);
 });
