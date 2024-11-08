@@ -30,7 +30,7 @@ test('trip ticket has user relation', function () {
 });
 
 test('trip ticket has employee relation', function () {
-    $employee = Employee::factory()->create();
+    $employee = Employee::factory()->create(['mobile' => '09171234567']);
     $trip_ticket = TripTicket::factory()->forUser()->make();
     $trip_ticket->employee()->associate($employee);
     expect($trip_ticket->employee->is($employee))->toBeTrue();

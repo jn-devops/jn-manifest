@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property string $remarks
  *
  * @method int getKey()
+ * @method void setStatus(string $name, string $reason)
  */
 class TripTicket extends Model
 {
