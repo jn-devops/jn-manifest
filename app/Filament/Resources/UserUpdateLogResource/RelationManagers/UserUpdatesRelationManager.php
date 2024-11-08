@@ -42,6 +42,13 @@ class UserUpdatesRelationManager extends RelationManager
                         return $formattedDate . '<br>' . $formattedTime . '<br><small>' . $timeAgo . '</small>';
                     })
                     ->html(),
+                TextColumn::make('loggable_type')
+                    ->label('Model/Class/Table')
+                    ->formatStateUsing(function (string $state, Model $record) {
+
+                        return $record->loggable_type;
+                    })
+                    ->html(),
                 TextColumn::make('field')->grow(false),
                 TextColumn::make('from')->wrap()->grow(false),
                 TextColumn::make('to')->wrap()->grow(),

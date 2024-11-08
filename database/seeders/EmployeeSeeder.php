@@ -13,7 +13,7 @@ class EmployeeSeeder extends Seeder
      */
     public function run(): void
     {
-        Employee::updateOrCreate(['name' => 'Renzo Carianga','email' => 'renzo.carianga@gmail.com','mobile' => '9611074515'],['company_id' => 1,'department_id' => 1]);
-        Employee::updateOrCreate(['name' => 'Lester Hurtado','email' => 'devops@joy-nostalg.com','mobile' => '9173011987'],['company_id' => 1,'department_id' => 1]);
+        Employee::updateOrCreate(['email' => 'renzo.carianga@gmail.com'],['mobile' => '9611074515','name' => 'Renzo Carianga','company_id' => 1,'department_id' => 1]);
+        Employee::updateOrCreate(['email' => 'devops@joy-nostalg.com'],['mobile' => '9173011987','name' => 'Lester Hurtado','company_id' => 1,'department_id' => 1]);
     }
 }
