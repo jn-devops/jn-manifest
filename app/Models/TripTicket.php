@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Spatie\ModelStatus\HasStatuses;
 use Illuminate\Support\Carbon;
 
@@ -11,6 +12,7 @@ use Illuminate\Support\Carbon;
  * Class TripTicket
  *
  * @property int $id
+ * @property string $code
  * @property User $user
  * @property Employee $employee
  * @property CarType $carType
@@ -22,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property string $remarks
  *
  * @method int getKey()
+ * @method void setStatus(string $name, string $reason)
  */
 class TripTicket extends Model
 {
@@ -37,6 +40,13 @@ class TripTicket extends Model
         'fromDateTime' => 'datetime',
         'toDateTime' => 'datetime',
     ];
+
+    public static function booted(): void
+    {
+        static::creating(function (TripTicket $tripTicket) {
+            $tripTicket->code = substr(Str::uuid()->toString(), -8);
+        });
+    }
 
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -61,5 +71,10 @@ class TripTicket extends Model
     public function account(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Account::class);
+    }
+
+    public function manifests(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Manifest::class);
     }
 }

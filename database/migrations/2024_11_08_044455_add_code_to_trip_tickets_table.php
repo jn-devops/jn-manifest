@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('manifests', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('trip_ticket_id')->nullable();
-            $table->string('name')->index();
-            $table->string('passenger_type');
-            $table->timestamps();
+        Schema::table('trip_tickets', function (Blueprint $table) {
+            $table->string('code')->unique()->after('id');
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('manifests');
+        Schema::table('trip_tickets', function (Blueprint $table) {
+            $table->dropColumn('code');
+        });
     }
 };

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $name
  * @property string $passenger_type
- * @property TripTicket $tripTicket
+ * @property TripTicket $trip_ticket
  * @method int getKey()
  */
 class Manifest extends Model
@@ -24,7 +24,7 @@ class Manifest extends Model
         'passenger_type',
     ];
 
-    public function tripTicket(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function trip_ticket(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(TripTicket::class);
     }

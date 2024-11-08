@@ -12,6 +12,7 @@
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "lbhurtado/sms": "^2.3",
+        "lorisleiva/laravel-actions": "^2.8",
         "propaganistas/laravel-phone": "^5.3",
         "spatie/laravel-model-status": "^1.18"
     },

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Notification;
 uses(RefreshDatabase::class, WithFaker::class);
 
 test('employee has attributes', function () {
-    $employee = Employee::factory()->create();
+    $employee = Employee::factory()->create(['mobile' => '09171234567']);
     expect($employee->id)->toBeInt();
     expect($employee->name)->toBeString();
     expect($employee->email)->toBeString();
@@ -19,22 +19,22 @@ test('employee has attributes', function () {
 test('employee has fillables', function () {
     $name = $this->faker->name();
     $email = $this->faker->email();
-    $mobile = $this->faker->phoneNumber();
+    $mobile = '09171234567';
     $employee = Employee::create(compact('name', 'email', 'mobile'));
     expect($employee->name)->toBe($name);
     expect($employee->email)->toBe($email);
-    expect($employee->mobile)->toBe($mobile);
+    expect($employee->mobile)->toBe(phone($mobile, 'PH', \libphonenumber\PhoneNumberFormat::NATIONAL));
 });
 
 test('employee has company relation', function () {
-    $employee = Employee::factory()->create();
+    $employee = Employee::factory()->create(['mobile' => '09171234567']);
     $company = Company::factory()->create();
     $employee->company()->associate($company);
     expect($employee->company->is($company))->toBeTrue();
 });
 
 test('employee has department relation', function () {
-    $employee = Employee::factory()->create();
+    $employee = Employee::factory()->create(['mobile' => '09171234567']);
     $department = Department::factory()->create();
     $employee->department()->associate($department);
     expect($employee->department->is($department))->toBeTrue();
@@ -42,7 +42,7 @@ test('employee has department relation', function () {
 
 test('employee has notifications', function () {
     Notification::fake();
-    $employee = Employee::factory()->create();
+    $employee = Employee::factory()->create(['mobile' => '09171234567']);
     $employee->notify(new ForApprovalNotification);
     $employee->notify(new RejectedNotification);
     $employee->notify(new ForRevisionNotification);
