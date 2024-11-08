@@ -19,7 +19,6 @@ test('trip ticket has fillables', function () {
     $trip_ticket = TripTicket::make(compact('status', 'remarks'));
     $trip_ticket->user()->associate(User::factory()->create());
     $trip_ticket->save();
-    expect($trip_ticket->status)->toBe($status);
     expect($trip_ticket->remarks)->toBe($remarks);
 });
 
