@@ -1,8 +1,10 @@
 <?php
 
+use App\Notifications\{ApprovedNotification, ForApprovalNotification, ForRevisionNotification, RejectedNotification};
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\{Company, Department, Employee};
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Notification;
 
 uses(RefreshDatabase::class, WithFaker::class);
 
@@ -36,4 +38,21 @@ test('employee has department relation', function () {
     $department = Department::factory()->create();
     $employee->department()->associate($department);
     expect($employee->department->is($department))->toBeTrue();
+});
+
+test('employee has notifications', function () {
+    Notification::fake();
+    $employee = Employee::factory()->create();
+    $employee->notify(new ForApprovalNotification);
+    $employee->notify(new RejectedNotification);
+    $employee->notify(new ForRevisionNotification);
+    $employee->notify(new ApprovedNotification);
+    Notification::assertSentTo($employee, ForApprovalNotification::class);
+    Notification::assertSentTo($employee, RejectedNotification::class);
+    Notification::assertSentTo($employee, ForRevisionNotification::class);
+    Notification::assertSentTo($employee, ApprovedNotification::class);
+});
+
+test('employee has mobile format', function () {
+    $employee = Employee::factory()->create(['mobile' => '09173011987']);
 });

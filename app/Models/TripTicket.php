@@ -30,7 +30,6 @@ class TripTicket extends Model
     use HasFactory;
 
     protected $fillable = [
-        'status',
         'remarks'
     ];
 
