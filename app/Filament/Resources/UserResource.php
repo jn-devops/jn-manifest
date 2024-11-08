@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\UpdateLogsResource\RelationManagers\UpdateLogRelationManager;
 use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserUpdateLogResource\RelationManagers\UserUpdatesRelationManager;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
@@ -11,6 +13,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
+use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\SelectColumn;
@@ -135,10 +138,12 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // RelationGroup::make('', [
-            //     ParticipantsRelationManager::class,
-            //     LogsRelationManager::class,
-            // ]),
+//             RelationGroup::make('Logs', [
+//                 UpdateLogRelationManager::class,
+//                UserUpdatesRelationManager::class
+//             ]),
+            UpdateLogRelationManager::class,
+            UserUpdatesRelationManager::class
         ];
     }
 

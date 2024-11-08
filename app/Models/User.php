@@ -55,4 +55,14 @@ class User extends Authenticatable implements FilamentUser
     {
         return true;
     }
+
+    public function updateLog()
+    {
+        return $this->morphMany(UpdateLog::class, 'loggable');
+    }
+
+    public function userUpdates(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(UpdateLog::class, 'user_id');
+    }
 }

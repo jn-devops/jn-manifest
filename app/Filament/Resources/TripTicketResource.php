@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TripTicketResource\Pages;
 use App\Filament\Resources\TripTicketResource\RelationManagers;
+use App\Filament\Resources\UpdateLogsResource\RelationManagers\UpdateLogRelationManager;
 use App\Models\TripTicket;
+use App\Models\UpdateLog;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Placeholder;
@@ -197,7 +199,7 @@ class TripTicketResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+           UpdateLogRelationManager::class,
         ];
     }
 
