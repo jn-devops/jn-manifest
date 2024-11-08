@@ -3,6 +3,10 @@
 namespace App\Filament\Resources\TripTicketResource\Pages;
 
 use App\Filament\Resources\TripTicketResource;
+use App\Notifications\ApprovedNotification;
+use App\Notifications\ForApprovalNotification;
+use App\Notifications\ForRevisionNotification;
+use App\Notifications\RejectedNotification;
 use Filament\Actions;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -50,6 +54,13 @@ class EditTripTicket extends EditRecord
                     $record->setStatus($data['status'], $data['remarks']);
                     $record->status=$data['status'];
                     $record->save();
+
+                    match ($data['status']) {
+                        'For Approval' => $record->employee->notify(new ForApprovalNotification),
+                        'Rejected' => $record->employee->notify(new RejectedNotification),
+                        'For Revision' => $record->employee->notify(new ForRevisionNotification),
+                        'Approved' => $record->employee->notify(new ApprovedNotification),
+                    };
                 })->modalWidth(MaxWidth::ScreenSmall),
         ];
     }
