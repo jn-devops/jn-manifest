@@ -51,7 +51,7 @@ class EditTripTicket extends EditRecord
                     ]);
                 })
                 ->action(function (Model $record, array $data) {
-                    $record->setStatus($data['status'], $data['remarks']);
+                    $record->setStatus($data['status'], $data['remarks']??'');
                     $record->status=$data['status'];
                     $record->save();
 
