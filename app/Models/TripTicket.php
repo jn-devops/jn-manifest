@@ -35,13 +35,14 @@ class TripTicket extends Model
 
     protected $fillable = [
         'remarks',
-        'location'
+        'location',
     ];
 
     protected $casts = [
         'fromDateTime' => 'datetime',
         'toDateTime' => 'datetime',
     ];
+
 
     public static function booted(): void
     {

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\TripTicketResource\Pages;
 
 use App\Filament\Resources\TripTicketResource;
+use App\Models\TripTicket;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 

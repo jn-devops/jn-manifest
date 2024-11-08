@@ -5,9 +5,11 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TripTicketResource\Pages;
 use App\Filament\Resources\TripTicketResource\RelationManagers;
 use App\Models\TripTicket;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -70,7 +72,8 @@ class TripTicketResource extends Resource
                                 ->rows(10)
                                 ->columns(10)
                                 ->maxLength(255),
-                            Forms\Components\Repeater::make('manifest')
+                            Forms\Components\Repeater::make('manifests')
+                                ->relationship()
                                 ->label('Passengers')
                                 ->schema([
                                     Forms\Components\TextInput::make('name')->required(),
@@ -94,8 +97,10 @@ class TripTicketResource extends Resource
                         ->schema([
                             Forms\Components\Section::make()
                                 ->schema([
+
                                     Placeholder::make('status')
-                                        ->content(fn ($record) => $record?->status ?? new HtmlString('&mdash;')),
+                                        ->content(fn ($record) => $record?->status)
+                                        ->hiddenOn('create'),
                                     Placeholder::make('created_at')
                                         ->content(fn ($record) => $record?->created_at?->diffForHumans() ?? new HtmlString('&mdash;')),
 
@@ -113,6 +118,7 @@ class TripTicketResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
+                    ->label('Requestor')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('employee.name')
@@ -134,6 +140,13 @@ class TripTicketResource extends Resource
                     ->dateTime()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state, Model $record): string => match ($record->status) {
+                        'For Approval' => 'gray',
+                        'For Revision' => 'warning',
+                        'Approved' => 'success',
+                        'Rejected' => 'danger',
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('remarks')
                     ->searchable(),

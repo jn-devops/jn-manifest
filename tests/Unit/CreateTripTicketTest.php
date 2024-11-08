@@ -17,8 +17,9 @@ test('create trip ticket works', function () {
     $fromDateTime = Carbon::now();
     $toDateTime = Carbon::now();
     $remarks = $this->faker->sentence();
+    $location = $this->faker->address();
 
-    $trip_ticket = app(CreateTripTicket::class)->run($user, $employee, $carType, $project, $account, $fromDateTime, $toDateTime, $remarks);
+    $trip_ticket = app(CreateTripTicket::class)->run($user, $employee, $carType, $project, $account, $fromDateTime, $toDateTime, $remarks,$location);
     expect($trip_ticket)->toBeInstanceOf(TripTicket::class);
     expect($trip_ticket->user->is($user))->toBeTrue();
     expect($trip_ticket->employee->is($employee))->toBeTrue();
@@ -28,5 +29,6 @@ test('create trip ticket works', function () {
     expect($trip_ticket->fromDateTime->is($fromDateTime))->toBeTrue();
     expect($trip_ticket->toDateTime->is($toDateTime))->toBeTrue();
     expect($trip_ticket->remarks)->toBe($remarks);
-    expect($trip_ticket->status)->toBe('for approval');
+    expect($trip_ticket->location)->toBe($location);
+    expect($trip_ticket->status)->toBe('For Approval');
 });
