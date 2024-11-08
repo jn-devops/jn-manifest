@@ -9,6 +9,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser
@@ -50,6 +51,34 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public static function booted(): void
+    {
+        static::updating(function ($data) {
+            foreach (array_keys($data->getAttributes()) as $attr) {
+                if ($data->isDirty($attr)) {
+                    $from = $data->getOriginal($attr);
+                    $to = $data->getAttribute($attr);
+
+                    if (Str::endsWith($attr, '_id') && method_exists($data, Str::camel(str_replace('_id', '', $attr)))) {
+                        $relationshipName = Str::camel(str_replace('_id', '', $attr));
+                        $relatedModel = $data->$relationshipName()->getRelated();
+
+                        // Retrieve the name or another identifier instead of the ID
+                        $from = $data->getOriginal($attr) ? optional($relatedModel->find($data->getOriginal($attr)))->name : null;
+                        $to = $data->getAttribute($attr) ? optional($relatedModel->find($data->getAttribute($attr)))->name : null;
+                    }
+
+                    $data->updateLog()->create([
+                        'field' => Str::endsWith($attr, '_id') ? str_replace('_id', '', $attr) : $attr,
+                        'from' => $from??'',
+                        'to' => $to??'',
+                        'user_id'=> \auth()->user()->id
+                    ]);
+                }
+            }
+        });
     }
     public function canAccessPanel(Panel $panel): bool
     {

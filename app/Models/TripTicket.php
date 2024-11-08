@@ -67,8 +67,8 @@ class TripTicket extends Model
 
                     $data->updateLog()->create([
                         'field' => Str::endsWith($attr, '_id') ? str_replace('_id', '', $attr) : $attr,
-                        'from' => $from,
-                        'to' => $to,
+                        'from' => $from??'',
+                        'to' => $to??'',
                         'user_id'=> \auth()->user()->id
                     ]);
                 }
