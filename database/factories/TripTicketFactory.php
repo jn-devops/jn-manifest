@@ -17,7 +17,8 @@ class TripTicketFactory extends Factory
     public function definition(): array
     {
         return [
-            'remarks' => $this->faker->sentence()
+            'remarks' => $this->faker->sentence(),
+            'location' => $this->faker->sentence(),
         ];
     }
 }

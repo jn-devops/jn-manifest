@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $toDateTime
  * @property string $status
  * @property string $remarks
+ * @property string $location
  *
  * @method int getKey()
  * @method void setStatus(string $name, string $reason)
@@ -33,7 +34,8 @@ class TripTicket extends Model
     use HasFactory;
 
     protected $fillable = [
-        'remarks'
+        'remarks',
+        'location'
     ];
 
     protected $casts = [
