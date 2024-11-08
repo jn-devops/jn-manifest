@@ -13,6 +13,7 @@ test('trip ticket has attributes', function () {
     expect(strlen($trip_ticket->code))->toBe(8);
     expect($trip_ticket->status)->toBeString();
     expect($trip_ticket->remarks)->toBeString();
+    expect($trip_ticket->location)->toBeString();
 });
 
 test('trip ticket has fillables', function () {
