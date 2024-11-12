@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use libphonenumber\PhoneNumberFormat;
+use Bavix\Wallet\Interfaces\{Customer, Wallet};
+use Bavix\Wallet\Traits\HasWallet;
+use Bavix\Wallet\Traits\CanPay;
 
 /**
  * Class Employee
@@ -23,11 +26,13 @@ use libphonenumber\PhoneNumberFormat;
  *
  * @method int getKey()
  */
-class Employee extends Model
+class Employee extends Model implements Wallet, Customer
 {
     /** @use HasFactory<\Database\Factories\EmployeeFactory> */
     use HasFactory;
     use Notifiable;
+    use HasWallet;
+    use CanPay;
 
     const PHONE_SEARCH_FORMAT = PhoneNumberFormat::E164;
 
