@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Spatie\ModelStatus\HasStatuses;
 use Illuminate\Support\Carbon;
+use Bavix\Wallet\Traits\HasWallet;
+use Bavix\Wallet\Interfaces\Customer;
+use Bavix\Wallet\Interfaces\ProductInterface;
 
 /**
  * Class TripTicket
@@ -28,11 +31,12 @@ use Illuminate\Support\Carbon;
  * @method int getKey()
  * @method void setStatus(string $name, string $reason)
  */
-class TripTicket extends Model
+class TripTicket extends Model implements ProductInterface
 {
     /** @use HasFactory<\Database\Factories\TripTicketFactory> */
     use HasStatuses;
     use HasFactory;
+    use HasWallet;
 
     protected $fillable = [
         'remarks',
@@ -43,7 +47,6 @@ class TripTicket extends Model
         'fromDateTime' => 'datetime',
         'toDateTime' => 'datetime',
     ];
-
 
     public static function booted(): void
     {
@@ -109,5 +112,30 @@ class TripTicket extends Model
     public function updateLog()
     {
         return $this->morphMany(UpdateLog::class, 'loggable');
+    }
+
+
+    public function canBuy(Customer $customer, int $quantity = 1, bool $force = false): bool
+    {
+        /**
+         * This is where you implement the constraint logic.
+         *
+         * If the service can be purchased once, then
+         *  return !$customer->paid($this);
+         */
+        return true;
+    }
+
+    public function getAmountProduct(Customer $customer): int|string
+    {
+        return 100;
+    }
+
+    public function getMetaProduct(): ?array
+    {
+        return [
+            'title' => 'Title',
+            'description' => 'Purchase of Product #' . $this->id,
+        ];
     }
 }
