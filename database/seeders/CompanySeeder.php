@@ -13,7 +13,18 @@ class CompanySeeder extends Seeder
      */
     public function run(): void
     {
-        Company::updateOrCreate(['name' => 'Joy Nostalg']);
-        Company::updateOrCreate(['name' => 'Raemuland Lands Inc.']);
+        $data = [
+            ['name' => 'Raemulan Lands Inc'],
+            ['name' => 'Rayvaness Realty Corp'],
+            ['name' => 'Enclavewrx Commune Inc'],
+            ['name' => 'Enclavewrx Digital Inc'],
+            ['name' => 'Fortis Investment Corp'],
+            ['name' => 'Quantuvis Resource Corp'],
+            ['name' => 'ZKFX'],
+            ['name' => 'Joy Nostalg Foundation'],
+        ];
+        foreach($data as $item){
+            Company::updateOrCreate(['name' => $item['name']]);
+        }
     }
 }

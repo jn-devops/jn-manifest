@@ -13,8 +13,12 @@ class CarTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        CarType::updateOrCreate(['name' => 'Sedan'], ['description' => 'Sedan']);
-        CarType::updateOrCreate(['name' => 'SUV'], ['description' => 'SUV','capacity' => 7]);
-        CarType::updateOrCreate(['name' => 'Van'], ['description' => 'Van','capacity' => 9]);
+        $data = [
+            ['name' => 'SUV', 'description' => 'SUV', 'capacity' => '7'],
+            ['name' => 'Van', 'description' => 'Van', 'capacity' => '14'],
+        ];
+        foreach($data as $item){
+            CarType::updateOrCreate(['name' => $item['name']], ['description' => $item['description'], 'capacity' => $item['capacity']]);
+        }
     }
 }
