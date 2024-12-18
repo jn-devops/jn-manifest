@@ -34,7 +34,7 @@ class Employee extends Model implements Wallet, Customer
     use HasWallet;
     use CanPay;
 
-    const PHONE_SEARCH_FORMAT = PhoneNumberFormat::E164;
+//    const PHONE_SEARCH_FORMAT = PhoneNumberFormat::E164;
 
     protected $fillable = [
         'name',
@@ -42,19 +42,19 @@ class Employee extends Model implements Wallet, Customer
         'mobile'
     ];
 
-    public static function fromMobile(string $value): ?static
-    {
-        $employee = null;
-        try {
-            $mobile = phone($value, 'PH', self::PHONE_SEARCH_FORMAT);
-            $employee = static::where('mobile', $mobile)->first();
-        }
-        catch (NumberParseException $exception) {
-
-        }
-
-        return $employee;
-    }
+//    public static function fromMobile(string $value): ?static
+//    {
+//        $employee = null;
+//        try {
+//            $mobile = phone($value, 'PH', self::PHONE_SEARCH_FORMAT);
+//            $employee = static::where('mobile', $mobile)->first();
+//        }
+//        catch (NumberParseException $exception) {
+//
+//        }
+//
+//        return $employee;
+//    }
 
     public function routeNotificationForEngageSpark(): string
     {
@@ -70,21 +70,25 @@ class Employee extends Model implements Wallet, Customer
     {
         return $this->belongsTo(Department::class);
     }
-
-    protected function mobile(): Attribute
+    public function market_segment(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return Attribute::make(
-            get: fn (?string $value, $attributes) => $value
-                ? phone($value, $this->mobile_country, PhoneNumberFormat::NATIONAL)
-                : null,
-            set: fn ($value) => [
-                'mobile' => $value ? phone($value, $this->mobile_country, libPhoneNumberFormat::E164): null
-            ]
-        );
+        return $this->belongsTo(MarketSegment::class);
     }
 
-    public function getMobileCountryAttribute(): string
-    {
-        return 'PH';
-    }
+//    protected function mobile(): Attribute
+//    {
+//        return Attribute::make(
+//            get: fn (?string $value, $attributes) => $value
+//                ? phone($value, $this->mobile_country, PhoneNumberFormat::NATIONAL)
+//                : null,
+//            set: fn ($value) => [
+//                'mobile' => $value ? phone($value, $this->mobile_country, libPhoneNumberFormat::E164): null
+//            ]
+//        );
+//    }
+//
+//    public function getMobileCountryAttribute(): string
+//    {
+//        return 'PH';
+//    }
 }

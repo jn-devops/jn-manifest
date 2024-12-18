@@ -60,6 +60,12 @@ class EmployeeResource extends Resource
                             ->native(false)
                             ->relationship('department', 'name')
                             ->columnSpan(1),
+                        Forms\Components\Select::make('market_segment_id')
+                            ->required()
+                            ->preload()
+                            ->native(false)
+                            ->relationship('market_segment', 'name')
+                            ->columnSpan(1),
                     ])->columns(3)->columnSpan(3),
                     Forms\Components\Group::make()
                         ->schema([

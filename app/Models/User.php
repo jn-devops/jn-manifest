@@ -77,7 +77,7 @@ class User extends Authenticatable implements FilamentUser, Wallet
                         'field' => Str::endsWith($attr, '_id') ? str_replace('_id', '', $attr) : $attr,
                         'from' => $from??'',
                         'to' => $to??'',
-                        'user_id'=> \auth()->user()->id
+                        'user_id'=> \auth()->user()->id??0
                     ]);
                 }
             }
