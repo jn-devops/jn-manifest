@@ -41,6 +41,7 @@ class TripTicket extends Model implements ProductInterface
     protected $fillable = [
         'remarks',
         'location',
+        'ticket_number',
     ];
 
     protected $casts = [
@@ -52,6 +53,18 @@ class TripTicket extends Model implements ProductInterface
     {
         static::creating(function (TripTicket $tripTicket) {
             $tripTicket->code = substr(Str::uuid()->toString(), -8);
+            $yearMonth = now()->format('ym'); // YYMM format
+            $lastTicket = static::where('ticket_number', 'like', "$yearMonth-%")
+                ->orderBy('ticket_number', 'desc')
+                ->first();
+
+            // Extract the last sequence and increment it
+            $lastSequence = $lastTicket
+                ? (int) substr($lastTicket->ticket_number, -4)
+                : 0;
+
+            $newSequence = str_pad($lastSequence + 1, 4, '0', STR_PAD_LEFT);
+            $tripTicket->ticket_number = "{$yearMonth}-{$newSequence}";
         });
         static::updating(function ($data) {
             foreach (array_keys($data->getAttributes()) as $attr) {
