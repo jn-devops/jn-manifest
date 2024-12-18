@@ -79,6 +79,7 @@ class TripTicketResource extends Resource
                                 ->label('Passengers')
                                 ->schema([
                                     Forms\Components\TextInput::make('name')->required(),
+                                    Forms\Components\TextInput::make('mobile'),
                                     Forms\Components\Select::make('passenger_type')
                                         ->label('Type')
                                         ->options([
@@ -90,7 +91,7 @@ class TripTicketResource extends Resource
                                         ->default('guest')
                                         ->native(false),
                                 ])
-                                ->columns(2)
+                                ->columns(3)
                                 ->maxItems(5)
                                 ->minItems(1)
                                 ->columnSpanFull()
@@ -100,6 +101,7 @@ class TripTicketResource extends Resource
                                 ->label('Passengers')
                                 ->schema([
                                     Forms\Components\TextInput::make('name')->required(),
+                                    Forms\Components\TextInput::make('mobile'),
                                     Forms\Components\Select::make('passenger_type')
                                         ->label('Type')
                                         ->options([
@@ -111,7 +113,7 @@ class TripTicketResource extends Resource
                                         ->default('guest')
                                         ->native(false),
                                 ])
-                                ->columns(2)
+                                ->columns(3)
                                 ->maxItems(5)
                                 ->minItems(1)
                                 ->columnSpanFull()

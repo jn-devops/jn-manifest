@@ -22,6 +22,7 @@ class Manifest extends Model
     protected $fillable = [
         'name',
         'passenger_type',
+        'mobile'
     ];
 
     public function trip_ticket(): \Illuminate\Database\Eloquent\Relations\BelongsTo
