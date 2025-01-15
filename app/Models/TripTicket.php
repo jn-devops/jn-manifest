@@ -3,14 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Bavix\Wallet\Interfaces\ProductInterface;
 use Illuminate\Database\Eloquent\Model;
+use Bavix\Wallet\Traits\HasWalletFloat;
+use Bavix\Wallet\Interfaces\Customer;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use Spatie\ModelStatus\HasStatuses;
 use Illuminate\Support\Carbon;
-use Bavix\Wallet\Traits\HasWallet;
-use Bavix\Wallet\Interfaces\Customer;
-use Bavix\Wallet\Interfaces\ProductInterface;
+use Illuminate\Support\Str;
 
 /**
  * Class TripTicket
@@ -27,6 +27,7 @@ use Bavix\Wallet\Interfaces\ProductInterface;
  * @property string $status
  * @property string $remarks
  * @property string $location
+ * @property float $amount //TODO: create this attribute
  *
  * @method int getKey()
  * @method void setStatus(string $name, string $reason)
@@ -34,9 +35,9 @@ use Bavix\Wallet\Interfaces\ProductInterface;
 class TripTicket extends Model implements ProductInterface
 {
     /** @use HasFactory<\Database\Factories\TripTicketFactory> */
+    use HasWalletFloat;
     use HasStatuses;
     use HasFactory;
-    use HasWallet;
 
     protected $fillable = [
         'remarks',
