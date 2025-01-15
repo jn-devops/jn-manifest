@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Approver extends Model
 {
     protected $fillable = [
+        'approver_type', // Approver 1 or Approver 2
+        'name',
+        'email',
         'unit',
         'type',
         'department',
