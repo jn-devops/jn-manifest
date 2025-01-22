@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.2",
         "bavix/laravel-wallet": "^11.3",
-        "bezhansalleh/filament-shield": "^3.2",
+        "bezhansalleh/filament-shield": "^3.3",
         "filament/filament": "^3.2",
         "filament/notifications": "^3.2",
         "howdu/filament-record-switcher": "^1.0",
