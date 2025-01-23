@@ -20,6 +20,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+
 
 class TripTicketResource extends Resource
 {
@@ -41,17 +43,26 @@ class TripTicketResource extends Resource
                                 ->preload()
                                 ->native(false)
                                 ->relationship('employee', 'name')
-                                ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name} \n {$record->company->name} \n {$record->department->name}"),
+                                ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name} \n {$record->company->name} \n {$record->department->name} "),
+                            Forms\Components\Select::make('charge_to')
+                                ->label('Charging')
+                                ->required()
+                                ->searchable()
+                                ->preload()
+                                ->native(false)
+                                ->relationship('charging', 'budget_line_charging_2')
+                                ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->budget_line_charging_2} \n {$record->unit} \n {$record->type} \n {$record->department} \n {$record->cost_center}"),
                             Forms\Components\Select::make('car_type_id')
                                 ->relationship('carType', 'name')
                                 ->preload()
                                 ->native(false)
                                 ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name} : {$record->capacity}")
                                 ->required(),
-                            Forms\Components\Select::make('project_id')
-                                ->relationship('project', 'name')
+                            Forms\Components\Select::make('provider_code')
+                                ->relationship('provider', 'name')
                                 ->preload()
                                 ->native(false)
+                                ->searchable()
                                 ->required(),
                             Forms\Components\Select::make('account_id')
                                 ->relationship('account', 'name')
@@ -64,6 +75,20 @@ class TripTicketResource extends Resource
                             Forms\Components\DateTimePicker::make('toDateTime')
                                 ->native(false)
                                 ->required(),
+                            Forms\Components\Textarea::make('pick_up_point')
+                                ->label('Pick Up Point')
+                                ->rows(5)
+                                ->columns(5)
+                                ->required()
+                                ->maxLength(255)
+                                ->columnSpanFull(),
+                            Forms\Components\Textarea::make('drop_off_point')
+                                ->label('Drop Off Point')
+                                ->rows(5)
+                                ->columns(5)
+                                ->required()
+                                ->maxLength(255)
+                                ->columnSpanFull(),
                             Forms\Components\Textarea::make('location')
                                 ->rows(5)
                                 ->columns(5)
@@ -75,6 +100,21 @@ class TripTicketResource extends Resource
                                 ->rows(10)
                                 ->columns(10)
                                 ->maxLength(255),
+                            Forms\Components\FileUpload::make('attachments')
+                                ->maxSize(10240)
+                                ->downloadable()
+                                ->openable()
+                                ->panelLayout('grid')
+                                ->multiple()
+                                ->previewable()
+                                ->visibility('public')
+                                ->directory('ticket-attachments')
+                                ->preserveFilenames()
+                                ->getUploadedFileNameForStorageUsing(
+                                    fn (TemporaryUploadedFile $file,Model $record): string => (string) str($file->getClientOriginalName())
+                                        ->prepend(now()->format('Ymd_His').'-'),
+                                )
+                                ->columnSpanFull(),
                             Forms\Components\Repeater::make('manifests')
                                 ->label('Passengers')
                                 ->schema([
@@ -127,6 +167,10 @@ class TripTicketResource extends Resource
                                     Placeholder::make('status')
                                         ->content(fn ($record) => $record?->status)
                                         ->hiddenOn('create'),
+                                    Forms\Components\TextInput::make('invoice_number')
+                                        ->label('Invoice Number'),
+                                    Forms\Components\TextInput::make('request_for_payment_number')
+                                        ->label('RFP Number'),
                                     Placeholder::make('created_at')
                                         ->content(fn ($record) => $record?->created_at?->diffForHumans() ?? new HtmlString('&mdash;')),
                                     Placeholder::make('updated_at')

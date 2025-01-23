@@ -40,14 +40,29 @@ class TripTicket extends Model implements ProductInterface
     use HasFactory;
 
     protected $fillable = [
-        'remarks',
+        'code',
+        'user_id',
+        'employee_id',
+        'car_type_id',
+        'car_type_id',
+        'project_id',
+        'account_id',
+        'fromDateTime',
+        'toDateTime',
+        'status',
         'location',
         'ticket_number',
+        'request_for_payment_number',
+        'invoice_number',
+        'drop_off_point',
+        'pick_up_point',
+        'attachments'
     ];
 
     protected $casts = [
         'fromDateTime' => 'datetime',
         'toDateTime' => 'datetime',
+        'attachments' => 'array',
     ];
 
     public static function booted(): void
@@ -82,11 +97,17 @@ class TripTicket extends Model implements ProductInterface
                         $to = $data->getAttribute($attr) ? optional($relatedModel->find($data->getAttribute($attr)))->name : null;
                     }
 
+//                    $data->updateLog()->create([
+//                        'field' => Str::endsWith($attr, '_id') ? str_replace('_id', '', $attr) : $attr,
+//                        'from' => $from??'',
+//                        'to' => $to??'',
+//                        'user_id'=> \auth()->user()->id
+//                    ]);
                     $data->updateLog()->create([
                         'field' => Str::endsWith($attr, '_id') ? str_replace('_id', '', $attr) : $attr,
-                        'from' => $from??'',
-                        'to' => $to??'',
-                        'user_id'=> \auth()->user()->id
+                        'from' => is_array($from) ? json_encode($from) : ($from ?? ''),
+                        'to' => is_array($to) ? json_encode($to) : ($to ?? ''),
+                        'user_id' => auth()->id()
                     ]);
                 }
             }
@@ -126,6 +147,16 @@ class TripTicket extends Model implements ProductInterface
     public function updateLog()
     {
         return $this->morphMany(UpdateLog::class, 'loggable');
+    }
+
+    public function charging(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Approver::class,'charge_to','budget_line_charging_2');
+    }
+
+    public function provider(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Provider::class,'provider_code','code');
     }
 
 

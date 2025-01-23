@@ -67,4 +67,27 @@ class EditTripTicket extends EditRecord
                 })->modalWidth(MaxWidth::ScreenSmall),
         ];
     }
+//    protected function mutateFormDataBeforeFill(array $data): array
+//    {
+//        $data['ticket_number'] = $this->record->ticket_number;
+//        $data['request_for_payment_number'] = $this->record->request_for_payment_number;
+//        $data['invoice_number'] = $this->record->invoice_number;
+//        $data['drop_off_point'] = $this->record->drop_off_point;
+//        $data['pickup_point'] = $this->record->pick_up_point;
+//        $data['charge_to'] = $this->record->charge_to;
+//        $data['provider_code'] = $this->record->provider_code;
+//        $data['attachments'] = $this->record->attachments;
+//
+//        return $data;
+//    }
+
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        $record->update($data);
+        return $record;
+    }
+    protected function afterSave(): void
+    {
+        dd($this->record);
+    }
 }

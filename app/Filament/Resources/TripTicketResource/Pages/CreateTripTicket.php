@@ -36,6 +36,13 @@ class CreateTripTicket extends CreateRecord
             $data['location']
         );
 
+        $tripTicket->provider_code = $data['provider_code'];
+        $tripTicket->drop_off_point = $data['drop_off_point'];
+        $tripTicket->pick_up_point = $data['pick_up_point'];
+        $tripTicket->invoice_number = $data['invoice_number'];
+        $tripTicket->request_for_payment_number = $data['request_for_payment_number'];
+        $tripTicket->attachments= $data['attachments'];
+
         // After creating the TripTicket, add manifests if necessary
         foreach ($data['manifests'] as $manifestData) {
             $manifest = new Manifest();
