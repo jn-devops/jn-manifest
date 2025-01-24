@@ -23,6 +23,15 @@ class ApproverResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\TextInput::make('approver_type')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('email')
+                    ->required()
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('unit')
                     ->required()
                     ->maxLength(255),
@@ -55,6 +64,12 @@ class ApproverResource extends Resource
         return $table
             ->defaultPaginationPageOption(50)
             ->columns([
+                Tables\Columns\TextColumn::make('approver_type')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('email')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('unit')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('type')
