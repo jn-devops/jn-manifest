@@ -88,6 +88,6 @@ class EditTripTicket extends EditRecord
     }
     protected function afterSave(): void
     {
-        dd($this->record);
+//        dd($this->record);
     }
 }

@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TripTicketResource\Pages;
 use App\Filament\Resources\TripTicketResource\RelationManagers;
 use App\Filament\Resources\UpdateLogsResource\RelationManagers\UpdateLogRelationManager;
+use App\Models\EmployeeGroup;
+use App\Models\LocationReason;
 use App\Models\TripTicket;
 use App\Models\UpdateLog;
 use App\Models\User;
@@ -43,122 +45,93 @@ class TripTicketResource extends Resource
                                 ->preload()
                                 ->native(false)
                                 ->relationship('employee', 'name')
-                                ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name} \n {$record->company->name} \n {$record->department->name} "),
-                            Forms\Components\Select::make('charge_to')
-                                ->label('Charging')
+                                ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name} \n {$record->company->name} \n {$record->department->name} ")
+                                ->columnSpan(4),
+                            Forms\Components\Select::make('group_code')
+                                ->label('Group')
+                                ->native(false)
+                                ->relationship('group','description')
                                 ->required()
-                                ->searchable()
+                                ->columnSpan(4),
+                            Forms\Components\Select::make('projects')
                                 ->preload()
+                                ->relationship('projects','name')
+                                ->multiple()
                                 ->native(false)
-                                ->relationship('charging', 'budget_line_charging_2')
-                                ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->budget_line_charging_2} \n {$record->unit} \n {$record->type} \n {$record->department} \n {$record->cost_center}"),
-                            Forms\Components\Select::make('car_type_id')
-                                ->relationship('carType', 'name')
-                                ->preload()
-                                ->native(false)
-                                ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name} : {$record->capacity}")
-                                ->required(),
-                            Forms\Components\Select::make('provider_code')
-                                ->relationship('provider', 'name')
-                                ->preload()
-                                ->native(false)
-                                ->searchable()
-                                ->required(),
-                            Forms\Components\Select::make('account_id')
-                                ->relationship('account', 'name')
-                                ->preload()
-                                ->native(false)
-                                ->required(),
+                                ->columnSpan(4),
                             Forms\Components\DateTimePicker::make('fromDateTime')
+                                ->label('From Date Time')
                                 ->native(false)
+                                ->columnSpan(4)
                                 ->required(),
                             Forms\Components\DateTimePicker::make('toDateTime')
+                                ->label('To Date Time')
                                 ->native(false)
+                                ->columnSpan(4)
                                 ->required(),
-                            Forms\Components\Textarea::make('pick_up_point')
-                                ->label('Pick Up Point')
-                                ->rows(5)
-                                ->columns(5)
-                                ->required()
-                                ->maxLength(255)
+                        ])->columns(12)->columnSpanFull(),
+                        Forms\Components\Section::make()->schema([
+                            Forms\Components\Repeater::make('locations')
+                                ->relationship('locations')
+                                ->label('Stops')
+                                ->schema([
+                                    Forms\Components\TextInput::make('location')->required()
+                                        ->columnSpan(8),
+                                    Forms\Components\Select::make('reason_code')
+                                        ->label('Reason')
+                                        ->options(LocationReason::pluck('description', 'code'))
+                                        ->required()
+                                        ->native(false)
+                                        ->columnSpan(4),
+                                ])
+                                ->columns(12)
+                                ->maxItems(5)
+                                ->minItems(1)
                                 ->columnSpanFull(),
-                            Forms\Components\Textarea::make('drop_off_point')
-                                ->label('Drop Off Point')
-                                ->rows(5)
-                                ->columns(5)
-                                ->required()
-                                ->maxLength(255)
+                        ]),
+                        Forms\Components\Section::make()->schema([
+                            Forms\Components\Repeater::make('manifests')
+                                ->label('Passengers')
+                                ->relationship('manifests')
+                                ->schema([
+
+                                    Forms\Components\TextInput::make('name')->required()
+                                        ->columnSpan(4),
+                                    Forms\Components\TextInput::make('mobile')->columnSpan(4),
+                                    Forms\Components\TextInput::make('email')->columnSpan(4),
+                                    Forms\Components\Select::make('passenger_type')
+                                        ->label('Type')
+                                        ->options([
+                                            'driver' => 'Driver',
+                                            'guest' => 'Guest',
+                                            'employee' => 'Employee',
+                                        ])
+                                        ->required()
+                                        ->default('guest')
+                                        ->native(false)
+                                        ->columnSpan(4),
+                                    Forms\Components\Checkbox::make('attended')
+                                        ->label('Attended')
+                                        ->inline(false)
+                                        ->columnSpan(1),
+                                    Forms\Components\Checkbox::make('confirmed')
+                                        ->label('Confirmed')
+                                        ->inline(false)
+                                        ->columnSpan(1),
+                                ])
+                                ->columns(12)
+                                ->maxItems(5)
+                                ->minItems(1)
                                 ->columnSpanFull(),
-                            Forms\Components\Textarea::make('location')
-                                ->rows(5)
-                                ->columns(5)
-                                ->required()
-                                ->maxLength(255)
-                                ->columnSpanFull(),
+                        ]),
+                        Forms\Components\Section::make()->schema([
                             Forms\Components\Textarea::make('remarks')
                                 ->columnSpanFull()
                                 ->rows(10)
                                 ->columns(10)
                                 ->maxLength(255),
-                            Forms\Components\FileUpload::make('attachments')
-                                ->maxSize(10240)
-                                ->downloadable()
-                                ->openable()
-                                ->panelLayout('grid')
-                                ->multiple()
-                                ->previewable()
-                                ->visibility('public')
-                                ->directory('ticket-attachments')
-                                ->preserveFilenames()
-                                ->getUploadedFileNameForStorageUsing(
-                                    fn (TemporaryUploadedFile $file,Model $record): string => (string) str($file->getClientOriginalName())
-                                        ->prepend(now()->format('Ymd_His').'-'),
-                                )
-                                ->columnSpanFull(),
-                            Forms\Components\Repeater::make('manifests')
-                                ->label('Passengers')
-                                ->schema([
-                                    Forms\Components\TextInput::make('name')->required(),
-                                    Forms\Components\TextInput::make('mobile'),
-                                    Forms\Components\Select::make('passenger_type')
-                                        ->label('Type')
-                                        ->options([
-                                            'driver' => 'Driver',
-                                            'guest' => 'Guest',
-                                            'employee' => 'Employee',
-                                        ])
-                                        ->required()
-                                        ->default('guest')
-                                        ->native(false),
-                                ])
-                                ->columns(3)
-                                ->maxItems(5)
-                                ->minItems(1)
-                                ->columnSpanFull()
-                                ->hiddenOn('edit'),
-                            Forms\Components\Repeater::make('manifests')
-                                ->relationship()
-                                ->label('Passengers')
-                                ->schema([
-                                    Forms\Components\TextInput::make('name')->required(),
-                                    Forms\Components\TextInput::make('mobile'),
-                                    Forms\Components\Select::make('passenger_type')
-                                        ->label('Type')
-                                        ->options([
-                                            'driver' => 'Driver',
-                                            'guest' => 'Guest',
-                                            'employee' => 'Employee',
-                                        ])
-                                        ->required()
-                                        ->default('guest')
-                                        ->native(false),
-                                ])
-                                ->columns(3)
-                                ->maxItems(5)
-                                ->minItems(1)
-                                ->columnSpanFull()
-                                ->hiddenOn('create'),
-                        ])->columns(3)->columnSpanFull(),
+                        ]),
+
                     ])->columns(3)->columnSpan(3),
                     Forms\Components\Group::make()
                         ->schema([
@@ -167,10 +140,6 @@ class TripTicketResource extends Resource
                                     Placeholder::make('status')
                                         ->content(fn ($record) => $record?->status)
                                         ->hiddenOn('create'),
-                                    Forms\Components\TextInput::make('invoice_number')
-                                        ->label('Invoice Number'),
-                                    Forms\Components\TextInput::make('request_for_payment_number')
-                                        ->label('RFP Number'),
                                     Placeholder::make('created_at')
                                         ->content(fn ($record) => $record?->created_at?->diffForHumans() ?? new HtmlString('&mdash;')),
                                     Placeholder::make('updated_at')
@@ -199,6 +168,24 @@ class TripTicketResource extends Resource
                                         })
                                         ->hiddenOn('create'),
                                 ]),
+                            Forms\Components\Section::make()->schema([
+                                Forms\Components\FileUpload::make('attachments')
+                                    ->maxSize(10240)
+                                    ->downloadable()
+                                    ->openable()
+                                    ->panelLayout('grid')
+                                    ->multiple()
+                                    ->previewable()
+                                    ->visibility('public')
+                                    ->directory('ticket-attachments')
+                                    ->preserveFilenames()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn (TemporaryUploadedFile $file,Model $record): string => (string) str($file->getClientOriginalName())
+                                            ->prepend(now()->format('Ymd_His').'-'),
+                                    )
+                                    ->columnSpanFull(),
+                            ]),
+
                         ])
                         ->columnSpan(1),
                 ])->columnSpanFull()->columns(4),
@@ -216,14 +203,8 @@ class TripTicketResource extends Resource
                 Tables\Columns\TextColumn::make('employee.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('carType.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('project.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('account.name')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('projects.name')
+                    ->badge()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('fromDateTime')
                     ->dateTime()

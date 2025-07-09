@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             AccountSeeder::class,
             EmployeeSeeder::class,
             MarketSegmentSeeder::class,
+            LocationReasonSeeder::class,
+            EmployeeGroupSeeder::class,
         ]);
     }
 }

@@ -11,6 +11,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $name
  * @property string $passenger_type
+ * @property string $email
+ * @property boolean $attended
+ * @property boolean $confirmed
  * @property TripTicket $trip_ticket
  * @method int getKey()
  */
@@ -22,7 +25,10 @@ class Manifest extends Model
     protected $fillable = [
         'name',
         'passenger_type',
-        'mobile'
+        'mobile',
+        'email',
+        'attended',
+        'confirmed',
     ];
 
     public function trip_ticket(): \Illuminate\Database\Eloquent\Relations\BelongsTo

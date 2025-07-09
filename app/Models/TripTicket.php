@@ -7,6 +7,7 @@ use Bavix\Wallet\Interfaces\ProductInterface;
 use Illuminate\Database\Eloquent\Model;
 use Bavix\Wallet\Traits\HasWalletFloat;
 use Bavix\Wallet\Interfaces\Customer;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Spatie\ModelStatus\HasStatuses;
 use Illuminate\Support\Carbon;
@@ -16,7 +17,6 @@ use Illuminate\Support\Str;
  * Class TripTicket
  *
  * @property int $id
- * @property string $code
  * @property User $user
  * @property Employee $employee
  * @property CarType $carType
@@ -27,7 +27,7 @@ use Illuminate\Support\Str;
  * @property string $status
  * @property string $remarks
  * @property string $location
- * @property float $amount //TODO: create this attribute
+ * @property float $amount
  *
  * @method int getKey()
  * @method void setStatus(string $name, string $reason)
@@ -40,22 +40,14 @@ class TripTicket extends Model implements ProductInterface
     use HasFactory;
 
     protected $fillable = [
-        'code',
         'user_id',
         'employee_id',
-        'car_type_id',
-        'car_type_id',
-        'project_id',
-        'account_id',
+        'group_code',
         'fromDateTime',
         'toDateTime',
         'status',
         'location',
         'ticket_number',
-        'request_for_payment_number',
-        'invoice_number',
-        'drop_off_point',
-        'pick_up_point',
         'attachments'
     ];
 
@@ -68,7 +60,8 @@ class TripTicket extends Model implements ProductInterface
     public static function booted(): void
     {
         static::creating(function (TripTicket $tripTicket) {
-            $tripTicket->code = substr(Str::uuid()->toString(), -8);
+//            $tripTicket->code = substr(Str::uuid()->toString(), -8);
+            $tripTicket->user_id = auth()->id();
             $yearMonth = now()->format('ym'); // YYMM format
             $lastTicket = static::where('ticket_number', 'like', "$yearMonth-%")
                 ->orderBy('ticket_number', 'desc')
@@ -114,6 +107,22 @@ class TripTicket extends Model implements ProductInterface
         });
     }
 
+    public function projects()
+    {
+        return $this->belongsToMany(
+            Project::class,
+            'trip_ticket_projects',
+            'trip_ticket_number', // foreign key on the pivot table for TripTicket
+            'project_id',        // foreign key on the pivot table for Project
+            'ticket_number',       // local key on TripTicket model
+            'id'                 // local key on Project model
+        );
+    }
+
+    public function group(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(EmployeeGroup::class, 'group_code');
+    }
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -124,41 +133,20 @@ class TripTicket extends Model implements ProductInterface
         return $this->belongsTo(Employee::class);
     }
 
-    public function carType(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo(CarType::class);
-    }
-
-    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo(Project::class);
-    }
-
-    public function account(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo(Account::class);
-    }
-
     public function manifests(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Manifest::class);
+    }
+
+    public function locations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(TripTicketLocations::class, 'trip_ticket_number', 'ticket_number');
     }
 
     public function updateLog()
     {
         return $this->morphMany(UpdateLog::class, 'loggable');
     }
-
-    public function charging(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo(Approver::class,'charge_to','budget_line_charging_2');
-    }
-
-    public function provider(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo(Provider::class,'provider_code','code');
-    }
-
 
     public function canBuy(Customer $customer, int $quantity = 1, bool $force = false): bool
     {
