@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\HtmlString;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 
 
 class TripTicketResource extends Resource
@@ -117,7 +118,10 @@ class TripTicketResource extends Resource
                                     Forms\Components\Checkbox::make('confirmed')
                                         ->label('Confirmed')
                                         ->inline(false)
-                                        ->columnSpan(1),
+                                        ->columnSpan(1)
+                                        ->hidden(
+                                            fn() => auth()->user()->hasRole(['Sales'])
+                                        ),
                                 ])
                                 ->columns(12)
                                 ->maxItems(5)
@@ -236,6 +240,7 @@ class TripTicketResource extends Resource
                 //
             ])
             ->actions([
+
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

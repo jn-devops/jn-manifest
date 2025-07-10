@@ -6,6 +6,7 @@ use App\Filament\Resources\UserResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Howdu\FilamentRecordSwitcher\Filament\Concerns\HasRecordSwitcher;
+use STS\FilamentImpersonate\Pages\Actions\Impersonate;
 
 class EditUser extends EditRecord
 {
@@ -18,6 +19,7 @@ class EditUser extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Impersonate::make()->record($this->getRecord()) ,
             Actions\DeleteAction::make(),
         ];
     }
