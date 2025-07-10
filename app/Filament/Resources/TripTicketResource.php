@@ -7,6 +7,7 @@ use App\Filament\Resources\TripTicketResource\RelationManagers;
 use App\Filament\Resources\UpdateLogsResource\RelationManagers\UpdateLogRelationManager;
 use App\Models\EmployeeGroup;
 use App\Models\LocationReason;
+use App\Models\RoleStatusFilter;
 use App\Models\TripTicket;
 use App\Models\UpdateLog;
 use App\Models\User;
@@ -31,7 +32,15 @@ class TripTicketResource extends Resource
     protected static ?string $model = TripTicket::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    public static function getNavigationBadge(): ?string
+    {
+        $role = auth()->user()->roles()->first();
+        if($role->name == 'Sales'){
+            return static::getModel()::where('user_id', auth()->user()->id ?? 0)->count();
+        }else{
+            return static::getModel()::count();
+        }
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -199,6 +208,18 @@ class TripTicketResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->poll('10')
+            ->defaultPaginationPageOption(50)
+            ->extremePaginationLinks()
+            ->defaultSort('created_at','desc')
+            ->modifyQueryUsing(function (Builder $query) {
+                $role = auth()->user()->roles()->first();
+                if($role->name == 'Sales'){
+                    $query->where(function ($subQuery) use ($role) {
+                        $subQuery->where('user_id', auth()->user()->id ?? 0);
+                    });
+                }
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Requestor')
