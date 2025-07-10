@@ -55,6 +55,7 @@ class TripTicketResource extends Resource
                                 ->preload()
                                 ->native(false)
                                 ->relationship('employee', 'name')
+                                ->disabled(fn()=>auth()->user()->roles()->first()->name == 'Marketing')
                                 ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name} \n {$record->company->name} \n {$record->department->name} ")
                                 ->columnSpan(4),
                             Forms\Components\Select::make('group_code')
@@ -62,34 +63,43 @@ class TripTicketResource extends Resource
                                 ->native(false)
                                 ->relationship('group','description')
                                 ->required()
+                                ->disabled(fn()=>auth()->user()->roles()->first()->name == 'Marketing')
                                 ->columnSpan(4),
                             Forms\Components\Select::make('projects')
                                 ->preload()
                                 ->relationship('projects','name')
                                 ->multiple()
                                 ->native(false)
+                                ->disabled(fn()=>auth()->user()->roles()->first()->name == 'Marketing')
                                 ->columnSpan(4),
                             Forms\Components\DateTimePicker::make('fromDateTime')
                                 ->label('From Date Time')
                                 ->native(false)
                                 ->columnSpan(4)
+                                ->disabled(fn()=>auth()->user()->roles()->first()->name == 'Marketing')
                                 ->required(),
                             Forms\Components\DateTimePicker::make('toDateTime')
                                 ->label('To Date Time')
                                 ->native(false)
                                 ->columnSpan(4)
+                                ->disabled(fn()=>auth()->user()->roles()->first()->name == 'Marketing')
                                 ->required(),
                         ])->columns(12)->columnSpanFull(),
                         Forms\Components\Section::make()->schema([
                             Forms\Components\Repeater::make('locations')
+                                ->addable(fn()=>auth()->user()->roles()->first()->name != 'Marketing')
+                                ->deletable(fn()=>auth()->user()->roles()->first()->name != 'Marketing')
                                 ->relationship('locations')
                                 ->label('Stops')
                                 ->schema([
-                                    Forms\Components\TextInput::make('location')->required()
+                                    Forms\Components\TextInput::make('location')
+                                        ->required()
+                                        ->disabled(fn()=>auth()->user()->roles()->first()->name == 'Marketing')
                                         ->columnSpan(8),
                                     Forms\Components\Select::make('reason_code')
                                         ->label('Reason')
                                         ->options(LocationReason::pluck('description', 'code'))
+                                        ->disabled(fn()=>auth()->user()->roles()->first()->name == 'Marketing')
                                         ->required()
                                         ->native(false)
                                         ->columnSpan(4),
@@ -101,14 +111,21 @@ class TripTicketResource extends Resource
                         ]),
                         Forms\Components\Section::make()->schema([
                             Forms\Components\Repeater::make('manifests')
+                                ->addable(fn()=>auth()->user()->roles()->first()->name != 'Marketing')
+                                ->deletable(fn()=>auth()->user()->roles()->first()->name != 'Marketing')
                                 ->label('Passengers')
                                 ->relationship('manifests')
                                 ->schema([
 
                                     Forms\Components\TextInput::make('name')->required()
+                                        ->disabled(fn()=>auth()->user()->roles()->first()->name == 'Marketing')
                                         ->columnSpan(4),
-                                    Forms\Components\TextInput::make('mobile')->columnSpan(4),
-                                    Forms\Components\TextInput::make('email')->columnSpan(4),
+                                    Forms\Components\TextInput::make('mobile')
+                                        ->disabled(fn()=>auth()->user()->roles()->first()->name == 'Marketing')
+                                        ->columnSpan(4),
+                                    Forms\Components\TextInput::make('email')
+                                        ->disabled(fn()=>auth()->user()->roles()->first()->name == 'Marketing')
+                                        ->columnSpan(4),
                                     Forms\Components\Select::make('passenger_type')
                                         ->label('Type')
                                         ->options([
@@ -119,10 +136,12 @@ class TripTicketResource extends Resource
                                         ->required()
                                         ->default('guest')
                                         ->native(false)
+                                        ->disabled(fn()=>auth()->user()->roles()->first()->name == 'Marketing')
                                         ->columnSpan(4),
                                     Forms\Components\Checkbox::make('attended')
                                         ->label('Attended')
                                         ->inline(false)
+                                        ->disabled(fn()=>auth()->user()->roles()->first()->name == 'Marketing')
                                         ->columnSpan(1),
                                     Forms\Components\Checkbox::make('confirmed')
                                         ->label('Confirmed')
@@ -196,6 +215,7 @@ class TripTicketResource extends Resource
                                         fn (TemporaryUploadedFile $file,Model $record): string => (string) str($file->getClientOriginalName())
                                             ->prepend(now()->format('Ymd_His').'-'),
                                     )
+                                    ->disabled(fn()=>auth()->user()->roles()->first()->name == 'Marketing')
                                     ->columnSpanFull(),
                             ]),
 
