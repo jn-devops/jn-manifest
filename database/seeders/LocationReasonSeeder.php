@@ -15,8 +15,8 @@ class LocationReasonSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['code' => 'pick_up', 'description' => 'SUV'],
-            ['code' => 'drop_off', 'description' => 'Van'],
+            ['code' => 'pick_up', 'description' => 'Pick-Up'],
+            ['code' => 'drop_off', 'description' => 'Drop-Off'],
             ['code' => 'site_visit', 'description' => 'Site Visit'],
             ['code' => 'others', 'description' => 'Others'],
         ];
