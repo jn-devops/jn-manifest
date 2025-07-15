@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\AttendanceResource\Pages;
 use App\Filament\Resources\AttendanceResource\RelationManagers;
+use App\Livewire\MapComponent;
 use App\Models\Attendance;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -12,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Livewire;
 
 class AttendanceResource extends Resource
 {
@@ -23,20 +25,32 @@ class AttendanceResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('first_name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('last_name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('mobile')
-                    ->required()
-                    ->maxLength(255),
-            ]);
+                Forms\Components\Section::make()
+                ->schema([
+                    Forms\Components\TextInput::make('email')
+                        ->email()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('mobile')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('first_name')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('last_name')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('longitude')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('latitude')
+                        ->maxLength(255),
+                ])
+                    ->columns(2)
+                ->columnSpan(2),
+                Forms\Components\Section::make()
+                    ->schema([
+                        Livewire::make(MapComponent::class)
+                            ->key('MapComponent')
+                        ->hiddenOn('create')
+                    ])
+                    ->columnSpan(1),
+            ])->columns(3);
     }
 
     public static function table(Table $table): Table
