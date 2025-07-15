@@ -11,5 +11,7 @@ class Attendance extends Model
         'first_name',
         'last_name',
         'mobile',
+        'longitude',
+        'latitude',
     ];
 }
