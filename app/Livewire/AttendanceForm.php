@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Attendance;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -52,8 +53,13 @@ class AttendanceForm extends Component implements HasForms
     public function submit(): void
     {
         $data = $this->form->getState();
-
-        dd($this->latitude, $this->longitude);
+        Attendance::create([
+            'email' => $data['email'],
+            'first_name' => $data['first_name'],
+            'last_name' => $data['last_name'],
+            'longitude' => $this->longitude,
+            'latitude' => $this->latitude,
+        ]);
         //
     }
 
