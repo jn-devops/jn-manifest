@@ -65,7 +65,7 @@
             {{ $this->form }}
 
             <div class="flex justify-center">
-                <x-filament::button type="submit" class="mt-4 text-white py-2 px-4 rounded mx-auto w-60">
+                <x-filament::button color="gray" type="submit" class="mt-4 text-black py-2 px-4 rounded mx-auto w-60">
                     Submit
                 </x-filament::button>
             </div>
